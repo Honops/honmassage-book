@@ -121,6 +121,9 @@ async function initLecture() {
     zoneContenu.innerHTML = contenuHtml;
 
     mettreAJourNavigation(numero, chapitres);
+    if (typeof suivreProgressionChapitre === 'function') {
+      suivreProgressionChapitre(numero);
+    }
   } catch (erreur) {
     zoneContenu.innerHTML = '<p class="chapitre-erreur">Ce chapitre n\'est pas encore disponible.</p>';
     console.error(erreur);
