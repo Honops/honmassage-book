@@ -124,6 +124,9 @@ async function initLecture() {
     if (typeof suivreProgressionChapitre === 'function') {
       suivreProgressionChapitre(numero);
     }
+    if (typeof initLectureVoixHaute === 'function') {
+      initLectureVoixHaute(titre, zoneContenu);
+    }
   } catch (erreur) {
     zoneContenu.innerHTML = '<p class="chapitre-erreur">Ce chapitre n\'est pas encore disponible.</p>';
     console.error(erreur);
