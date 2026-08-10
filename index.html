@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HonoMassage — Livre numérique</title>
+  <meta name="description" content="HonoMassage — un manuel de massage bien-être en 12 chapitres, à lire en ligne.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <main class="home">
+    <div class="container home-container">
+
+      <img
+        class="home-cover"
+        src="images/cover/honomassage-cover.webp"
+        alt="Couverture du livre HonoMassage"
+      >
+
+      <h1 class="home-title">HonoMassage</h1>
+
+      <p class="home-intro">
+        Un guide complet pour découvrir l'art du massage bien-être :
+        gestes, préparation, environnement et pratique, en 12 chapitres.
+      </p>
+
+      <div class="home-actions">
+        <a href="chapitres.html" class="btn btn-primary">Commencer la lecture</a>
+
+        <a
+          href="#"
+          id="resume-btn"
+          class="btn btn-secondary"
+          style="display: none;"
+        >Reprendre la lecture</a>
+
+        <a href="chapitres.html" class="home-toc-link">Voir le sommaire</a>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // Affiche le bouton "Reprendre la lecture" si une progression existe déjà.
+    // La clé "honomassage-progress" sera écrite par js/progress.js (Étape 7).
+    // Ce script est autonome : tant que progress.js n'existe pas, il ne fait
+    // simplement rien (localStorage.getItem renvoie null).
+    (function () {
+      const saved = localStorage.getItem('honomassage-progress');
+      if (saved) {
+        try {
+          const progress = JSON.parse(saved);
+          const resumeBtn = document.getElementById('resume-btn');
+          if (progress && progress.chapter) {
+            resumeBtn.href = 'lecture.html?chapitre=' + progress.chapter;
+            resumeBtn.style.display = 'inline-flex';
+          }
+        } catch (e) {
+          // Donnée corrompue, on ignore silencieusement.
+        }
+      }
+    })();
+  </script>
+
+</body>
+</html>
