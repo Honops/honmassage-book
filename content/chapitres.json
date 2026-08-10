@@ -1,0 +1,14 @@
+[
+  { "numero": 1, "titre": "Chapitre 1", "resume": "" },
+  { "numero": 2, "titre": "Chapitre 2", "resume": "" },
+  { "numero": 3, "titre": "Chapitre 3", "resume": "" },
+  { "numero": 4, "titre": "Chapitre 4", "resume": "" },
+  { "numero": 5, "titre": "Chapitre 5", "resume": "" },
+  { "numero": 6, "titre": "Chapitre 6", "resume": "" },
+  { "numero": 7, "titre": "Chapitre 7", "resume": "" },
+  { "numero": 8, "titre": "Chapitre 8", "resume": "" },
+  { "numero": 9, "titre": "Chapitre 9", "resume": "" },
+  { "numero": 10, "titre": "Chapitre 10", "resume": "" },
+  { "numero": 11, "titre": "Chapitre 11", "resume": "" },
+  { "numero": 12, "titre": "Chapitre 12", "resume": "" }
+]
