@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="page-title">Lecture — HonoMassage</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="page-header">
+    <div class="container">
+      <a href="chapitres.html" class="back-link">← Sommaire</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+
+      <article class="chapitre-lecture">
+        <p class="chapitre-numero-label" id="chapitre-numero-label"></p>
+        <h1 id="chapitre-titre">Chargement...</h1>
+
+        <div class="chapitre-actions">
+          <button type="button" id="speech-btn" class="btn btn-secondary" disabled>
+            🔊 Écouter
+          </button>
+        </div>
+
+        <div id="chapitre-contenu" class="chapitre-contenu">
+          <!-- Contenu du chapitre inséré dynamiquement -->
+        </div>
+      </article>
+
+      <nav class="chapitre-navigation">
+        <a href="#" id="nav-precedent" class="btn btn-secondary nav-precedent" style="display: none;">
+          ← Chapitre précédent
+        </a>
+        <a href="#" id="nav-suivant" class="btn btn-primary nav-suivant" style="display: none;">
+          Chapitre suivant →
+        </a>
+      </nav>
+
+    </div>
+  </main>
+
+  <script src="js/book.js"></script>
+</body>
+</html>
