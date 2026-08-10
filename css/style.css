@@ -32,9 +32,8 @@
   color-scheme: light;
 }
 
-/* Mode sombre — activé automatiquement selon les préférences système.
-   La bascule manuelle (avec mémorisation) sera ajoutée à l'étape suivante
-   via une classe .theme-dark sur <html>, déjà anticipée ci-dessous. */
+/* Mode sombre — activé automatiquement selon les préférences système,
+   sauf si l'utilisateur a fait un choix manuel (.theme-dark / .theme-light). */
 @media (prefers-color-scheme: dark) {
   :root:not(.theme-light) {
     --color-bg: #1c1815;
@@ -52,7 +51,7 @@
   }
 }
 
-/* Bascule manuelle forcée (préparée pour l'Étape 9b) */
+/* Bascule manuelle forcée (via js/theme.js) */
 :root.theme-dark {
   --color-bg: #1c1815;
   --color-bg-alt: #24201c;
@@ -143,6 +142,24 @@ h1, h2, h3 {
   cursor: not-allowed;
 }
 
+/* Bouton de bascule du thème */
+.theme-toggle-btn {
+  position: fixed;
+  top: max(1rem, env(safe-area-inset-top));
+  right: max(1rem, env(safe-area-inset-right));
+  z-index: 10;
+  width: var(--touch-target-min);
+  height: var(--touch-target-min);
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
 /* ==========================================================================
    Page d'accueil
    ========================================================================== */
@@ -196,7 +213,7 @@ h1, h2, h3 {
    ========================================================================== */
 
 .page-header {
-  padding: 1.25rem 0;
+  padding: 1.25rem 4rem 1.25rem 0;
   border-bottom: 1px solid var(--color-border);
   margin-bottom: 2rem;
 }
@@ -480,21 +497,4 @@ h1, h2, h3 {
   .chapitre-lecture h1 {
     font-size: 2.5rem;
   }
-}
-/* Bouton de bascule du thème */
-.theme-toggle-btn {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  z-index: 10;
-  width: var(--touch-target-min);
-  height: var(--touch-target-min);
-  border-radius: 50%;
-  border: 1px solid var(--color-border);
-  background-color: var(--color-surface);
-  font-size: 1.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
 }
