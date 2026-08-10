@@ -142,9 +142,11 @@ h1, h2, h3 {
   cursor: not-allowed;
 }
 
-/* Bouton de bascule du thème */
+/* Bouton de bascule du thème — position "absolute" (et non "fixed") :
+   il reste visible en haut de page mais défile avec le contenu au lieu
+   de rester flottant en permanence au-dessus du texte de lecture. */
 .theme-toggle-btn {
-  position: fixed;
+  position: absolute;
   top: max(1rem, env(safe-area-inset-top));
   right: max(1rem, env(safe-area-inset-right));
   z-index: 10;
@@ -315,7 +317,6 @@ h1, h2, h3 {
   font-family: var(--font-serif);
   font-size: var(--font-size-base);
   line-height: var(--line-height-reading);
-  padding-right: 3rem;
 }
 
 .chapitre-contenu h2 {
@@ -498,8 +499,4 @@ h1, h2, h3 {
   .chapitre-lecture h1 {
     font-size: 2.5rem;
   }
-
-  .chapitre-contenu {
-    padding-right: 0;
-  }
-}
+   }
