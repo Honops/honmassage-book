@@ -1,14 +1,14 @@
 [
-  { "numero": 1, "titre": "Chapitre 1", "resume": "" },
-  { "numero": 2, "titre": "Chapitre 2", "resume": "" },
-  { "numero": 3, "titre": "Chapitre 3", "resume": "" },
-  { "numero": 4, "titre": "Chapitre 4", "resume": "" },
-  { "numero": 5, "titre": "Chapitre 5", "resume": "" },
-  { "numero": 6, "titre": "Chapitre 6", "resume": "" },
-  { "numero": 7, "titre": "Chapitre 7", "resume": "" },
-  { "numero": 8, "titre": "Chapitre 8", "resume": "" },
-  { "numero": 9, "titre": "Chapitre 9", "resume": "" },
-  { "numero": 10, "titre": "Chapitre 10", "resume": "" },
-  { "numero": 11, "titre": "Chapitre 11", "resume": "" },
-  { "numero": 12, "titre": "Chapitre 12", "resume": "" }
+  { "numero": 1, "titre": "Introduction au massage bien-être", "resume": "Définitions, grandes traditions, bienfaits et cadre légal du massage bien-être." },
+  { "numero": 2, "titre": "Anatomie et physiologie utiles à la pratique", "resume": "Peau, grandes zones musculaires, articulations, circulation et zones de prudence à connaître avant de masser." },
+  { "numero": 3, "titre": "Posture et ergonomie du praticien", "resume": "Adopter la bonne posture, utiliser le poids du corps, régler sa table et s'échauffer avant une séance." },
+  { "numero": 4, "titre": "Préparer une séance", "resume": "Aménager l'espace, mener l'entretien préalable et structurer le déroulé d'une séance de A à Z." },
+  { "numero": 5, "titre": "Matériel, huiles et produits", "resume": "Choisir sa table, ses huiles végétales et essentielles, et entretenir son matériel de base." },
+  { "numero": 6, "titre": "Hygiène, sécurité et consentement", "resume": "Règles d'hygiène, principes du consentement et bonne réaction face à une demande d'arrêt." },
+  { "numero": 7, "titre": "Contre-indications et situations à risque", "resume": "Contre-indications absolues et relatives, signes d'alerte et quand orienter vers un professionnel de santé." },
+  { "numero": 8, "titre": "Techniques fondamentales de massage", "resume": "Effleurage, pétrissage, friction, tapotement et vibration : les 5 gestes de base à maîtriser." },
+  { "numero": 9, "titre": "Routines par zone du corps", "resume": "Sept routines complètes, du dos aux pieds, jusqu'à la séance corps entier." },
+  { "numero": 10, "titre": "Adapter le massage selon les besoins", "resume": "Orienter une routine vers la détente ou le dynamisme selon le profil et l'objectif de la personne." },
+  { "numero": 11, "titre": "Erreurs courantes et perfectionnement", "resume": "Identifier ses erreurs récurrentes et structurer sa progression sur plusieurs mois." },
+  { "numero": 12, "titre": "Glossaire et annexes", "resume": "Glossaire, fiches vierges, corrigés des quiz et ressources pour aller plus loin." }
 ]
