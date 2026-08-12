@@ -360,8 +360,10 @@ h1, h2, h3 {
 
 .chapitre-actions {
   margin-bottom: 2rem;
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
-
 .chapitre-contenu {
   font-family: var(--font-serif);
   font-size: var(--font-size-base);
