@@ -1,7 +1,7 @@
 /* ==========================================================================
    HonoMassage Book — Design éditorial
    Variables de thème (clair + sombre), typographie, mise en page des
-   3 pages (accueil, sommaire, lecture), encadrés, tableaux, images.
+   pages (couverture, sommaire, lecture), encadrés, tableaux, images.
    ========================================================================== */
 
 :root {
@@ -32,8 +32,6 @@
   color-scheme: light;
 }
 
-/* Mode sombre — activé automatiquement selon les préférences système,
-   sauf si l'utilisateur a fait un choix manuel (.theme-dark / .theme-light). */
 @media (prefers-color-scheme: dark) {
   :root:not(.theme-light) {
     --color-bg: #1c1815;
@@ -51,7 +49,6 @@
   }
 }
 
-/* Bascule manuelle forcée (via js/theme.js) */
 :root.theme-dark {
   --color-bg: #1c1815;
   --color-bg-alt: #24201c;
@@ -66,7 +63,6 @@
   color-scheme: dark;
 }
 
-/* Reset minimal */
 * {
   box-sizing: border-box;
 }
@@ -90,7 +86,6 @@ img {
   max-width: 100%;
   height: auto;
   display: block;
-  border-radius: var(--radius);
 }
 
 a {
@@ -142,9 +137,7 @@ h1, h2, h3 {
   cursor: not-allowed;
 }
 
-/* Bouton de bascule du thème — position "absolute" (et non "fixed") :
-   il reste visible en haut de page mais défile avec le contenu au lieu
-   de rester flottant en permanence au-dessus du texte de lecture. */
+/* Bouton de bascule du thème */
 .theme-toggle-btn {
   position: absolute;
   top: max(1rem, env(safe-area-inset-top));
@@ -163,38 +156,94 @@ h1, h2, h3 {
 }
 
 /* ==========================================================================
-   Page d'accueil
+   Page d'accueil — Couverture du livre
    ========================================================================== */
 
 .home {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  padding: 3rem 0;
+  padding-bottom: 3rem;
 }
 
-.home-container {
+/* Zone image : pleine largeur, comme une photo de couverture */
+.cover {
+  position: relative;
+}
+
+.cover-image-wrap {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+}
+
+.cover-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Panneau qui chevauche le bas de l'image, comme le titre d'une jaquette */
+.cover-panel {
+  position: relative;
+  margin: -2.5rem auto 0;
+  max-width: var(--content-max-width);
+  background-color: var(--color-bg);
+  border-radius: 20px 20px 0 0;
+  padding: 2rem 1.5rem 1.75rem;
   text-align: center;
+  box-shadow: 0 -12px 28px rgba(0, 0, 0, 0.16);
 }
 
-.home-cover {
-  max-width: 320px;
-  margin: 0 auto 2rem;
-  border-radius: var(--radius);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
-}
-
-.home-title {
+.cover-title {
   font-size: 2.5rem;
-  margin: 0 0 1rem;
+  margin: 0 0 0.5rem;
   letter-spacing: 0.02em;
 }
 
-.home-intro {
+.cover-subtitle {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.15rem;
+  color: var(--color-text);
+  margin: 0 0 0.6rem;
+}
+
+.cover-tagline {
   color: var(--color-text-muted);
-  max-width: 480px;
-  margin: 0 auto 2rem;
-  line-height: 1.7;
+  font-size: 0.95rem;
+  margin: 0 0 0.5rem;
+}
+
+.cover-chapters {
+  color: var(--color-accent-dark);
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+  margin: 0 0 1.5rem;
+}
+
+.cover-author {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cover-author-rule {
+  width: 36px;
+  height: 1px;
+  background-color: var(--color-border);
+  margin-bottom: 0.75rem;
+}
+
+.cover-author-name {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* Zone boutons : visuellement séparée de la couverture */
+.home-actions-wrap {
+  margin-top: 2.5rem;
 }
 
 .home-actions {
@@ -369,18 +418,6 @@ h1, h2, h3 {
 }
 
 /* Fiche de progression + tableaux */
-.table-scroll {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  margin: 1.5rem 0;
-  border-radius: var(--radius);
-}
-
-.table-scroll .chapitre-tableau {
-  margin: 0;
-  min-width: 480px;
-}
-
 .chapitre-fiche-progression table,
 .chapitre-tableau {
   width: 100%;
@@ -437,9 +474,26 @@ h1, h2, h3 {
   border-bottom: 1px solid var(--color-border);
 }
 
+/* Tableaux défilables sur petit écran */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 1.5rem 0;
+  border-radius: var(--radius);
+}
+
+.table-scroll .chapitre-tableau {
+  margin: 0;
+  min-width: 480px;
+}
+
 /* Images et placeholders */
 .chapitre-image {
   margin: 2rem 0;
+}
+
+.chapitre-image img {
+  border-radius: var(--radius);
 }
 
 .image-placeholder {
@@ -503,11 +557,15 @@ h1, h2, h3 {
    ========================================================================== */
 
 @media (min-width: 640px) {
-  .home-title {
+  .cover-title {
     font-size: 3rem;
+  }
+
+  .cover-image-wrap {
+    aspect-ratio: 16 / 9;
   }
 
   .chapitre-lecture h1 {
     font-size: 2.5rem;
   }
-   }
+}
