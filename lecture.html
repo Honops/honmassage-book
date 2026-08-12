@@ -31,7 +31,21 @@
         <button type="button" id="speech-stop-btn" class="btn btn-secondary" style="display: none;">
           ⏹ Arrêter
         </button>
-      </div>
+        <select id="speech-rate" class="speech-rate-select" aria-label="Vitesse de lecture">
+          <option value="0.5">0,5×</option>
+          <option value="0.75">0,75×</option>
+          <option value="1" selected>1×</option>
+          <option value="1.25">1,25×</option>
+          <option value="1.5">1,5×</option>
+          <option value="1.7">1,7×</option>
+          <option value="1.8">1,8×</option>
+          <option value="2">2×</option>
+        </select>
+        <button type="button" id="music-toggle-btn" class="btn btn-secondary" aria-pressed="false">
+          🎵 Musique : désactivée
+        </button>
+        <audio id="ambient-audio" loop preload="none" src="audio/ambiance-douce.mp3"></audio>
+        </div>
 
         <div id="chapitre-contenu" class="chapitre-contenu">
           <!-- Contenu du chapitre inséré dynamiquement -->
