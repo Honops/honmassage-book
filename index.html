@@ -3,31 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HonoMassage — Livre numérique</title>
+  <meta name="description" content="HonoMassage — un manuel de massage bien-être en 12 chapitres, à lire en ligne.">
   <meta name="theme-color" content="#faf6f1">
   <meta property="og:title" content="HonoMassage — Livre numérique">
   <meta property="og:description" content="Un manuel de massage bien-être en 12 chapitres, à lire en ligne.">
-  <title>HonoMassage — Livre numérique</title>
-  <meta name="description" content="HonoMassage — un manuel de massage bien-être en 12 chapitres, à lire en ligne.">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
+  <button type="button" id="theme-toggle" class="theme-toggle-btn" aria-label="Changer de thème">🌙</button>
+
   <main class="home">
-    <div class="container home-container">
 
-      <img
-        class="home-cover"
-        src="images/cover/honomassage-cover.webp"
-        alt="Couverture du livre HonoMassage"
-      >
+    <section class="cover">
+      <div class="cover-image-wrap">
+        <img
+          class="cover-image"
+          src="images/cover/honomassage-cover.webp"
+          alt="Séance de massage bien-être dans une ambiance chaleureuse et apaisante"
+        >
+      </div>
 
-      <h1 class="home-title">HonoMassage</h1>
+      <div class="cover-panel">
+        <h1 class="cover-title">HonoMassage</h1>
+        <p class="cover-subtitle">Manuel pratique du massage bien-être</p>
+        <p class="cover-tagline">Gestes, préparation, environnement et pratique</p>
+        <p class="cover-chapters">12 chapitres pour apprendre, comprendre et pratiquer le massage bien-être</p>
 
-      <p class="home-intro">
-        Un guide complet pour découvrir l'art du massage bien-être :
-        gestes, préparation, environnement et pratique, en 12 chapitres.
-      </p>
+        <div class="cover-author">
+          <span class="cover-author-rule"></span>
+          <p class="cover-author-name">Alhassane Hono Toure</p>
+        </div>
+      </div>
+    </section>
 
+    <div class="container home-actions-wrap">
       <div class="home-actions">
         <a href="chapitres.html" class="btn btn-primary">Commencer la lecture</a>
 
@@ -40,15 +51,11 @@
 
         <a href="chapitres.html" class="home-toc-link">Voir le sommaire</a>
       </div>
-
     </div>
+
   </main>
 
   <script>
-    // Affiche le bouton "Reprendre la lecture" si une progression existe déjà.
-    // La clé "honomassage-progress" sera écrite par js/progress.js (Étape 7).
-    // Ce script est autonome : tant que progress.js n'existe pas, il ne fait
-    // simplement rien (localStorage.getItem renvoie null).
     (function () {
       const saved = localStorage.getItem('honomassage-progress');
       if (saved) {
@@ -65,6 +72,8 @@
       }
     })();
   </script>
+
+  <script src="js/theme.js"></script>
 
 </body>
 </html>
