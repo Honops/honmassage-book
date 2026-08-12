@@ -571,3 +571,14 @@ h1, h2, h3 {
     font-size: 2.5rem;
   }
 }
+/* Sélecteur de vitesse de lecture */
+.speech-rate-select {
+  min-height: var(--touch-target-min);
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+}
