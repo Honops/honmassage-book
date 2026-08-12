@@ -1,26 +1,30 @@
 // speech.js
 // Lecture à voix haute du contenu d'un chapitre via la Web Speech API native.
-// Le texte est découpé en segments courts pour éviter le bug connu de Chrome
-// qui interrompt silencieusement les utterances trop longues (~15s), et le
-// pause/reprise est piloté manuellement plutôt que via speechSynthesis.pause()/
-// resume(), peu fiables sur Android.
-// Gère aussi une vitesse de lecture réglable et une musique d'ambiance
-// optionnelle, synchronisées avec l'état de la voix.
+// Le texte est segmenté par bloc DOM réel (titres, paragraphes, items de
+// liste...) plutôt que comme un flux brut, ce qui permet à l'utilisateur de
+// choisir un point de départ en touchant un bloc. Chaque bloc est ensuite
+// lui-même découpé en segments courts (~200 caractères) pour éviter le bug
+// connu de Chrome qui interrompt silencieusement les utterances trop longues.
+// Gère aussi la vitesse de lecture et une musique d'ambiance optionnelle.
 
 const HONOMASSAGE_RATE_KEY = 'honomassage-speech-rate';
 const HONOMASSAGE_MUSIC_KEY = 'honomassage-music-enabled';
+const HONOMASSAGE_POSITION_KEY = 'honomassage-speech-position';
 
-let honomassageSegments = [];
+let honomassageSegments = [];       // [{ text, blockIndex }]
+let honomassageBlockStart = [];     // blockStart[i] = index du 1er segment du bloc i
+let honomassageBlockElements = [];  // éléments DOM correspondant à chaque bloc
 let honomassageIndexSegment = 0;
 let honomassageEtatLecture = 'arret'; // 'arret' | 'lecture' | 'pause'
 let honomassageRate = 1;
 let honomassageMusicEnabled = false;
 let honomassageAudio = null;
+let honomassageBlocActifEl = null;
 
-function texteLisibleDepuisContenu(elementContenu) {
-  const clone = elementContenu.cloneNode(true);
-  clone.querySelectorAll('.image-placeholder').forEach((el) => el.remove());
-  return clone.textContent.replace(/\s+/g, ' ').trim();
+function numeroChapitreActuel() {
+  const params = new URLSearchParams(window.location.search);
+  const numero = parseInt(params.get('chapitre'), 10);
+  return Number.isInteger(numero) && numero > 0 ? numero : 1;
 }
 
 function decouperEnSegments(texte, longueurMax) {
@@ -45,6 +49,83 @@ function decouperEnSegments(texte, longueurMax) {
   return segments;
 }
 
+// Construit la liste des blocs lisibles du chapitre et leur mapping vers
+// des segments de synthèse vocale, en conservant l'ordre du document.
+function construireBlocsEtSegments(elementContenu) {
+  const blocs = Array.from(
+    elementContenu.querySelectorAll('h2, h3, p, li, dt, dd, figcaption')
+  ).filter((el) => {
+    if (el.closest('.image-placeholder')) return false;
+    return el.textContent.trim().length > 0;
+  });
+
+  honomassageBlockElements = blocs;
+  honomassageSegments = [];
+  honomassageBlockStart = [];
+
+  blocs.forEach((bloc, index) => {
+    honomassageBlockStart[index] = honomassageSegments.length;
+    const texte = bloc.textContent.replace(/\s+/g, ' ').trim();
+    decouperEnSegments(texte).forEach((segmentTexte) => {
+      honomassageSegments.push({ text: segmentTexte, blockIndex: index });
+    });
+  });
+
+  blocs.forEach((bloc, index) => {
+    bloc.classList.add('speech-block');
+    bloc.setAttribute('role', 'button');
+    bloc.setAttribute('tabindex', '0');
+    bloc.addEventListener('click', () => selectionnerBloc(index));
+    bloc.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        selectionnerBloc(index);
+      }
+    });
+  });
+}
+
+function indexSegmentPourBloc(blockIndex) {
+  if (blockIndex <= 0) return 0;
+  return honomassageBlockStart[blockIndex] || 0;
+}
+
+function marquerBlocActif(blockIndex) {
+  if (honomassageBlocActifEl) {
+    honomassageBlocActifEl.classList.remove('speech-block-active');
+  }
+  const el = honomassageBlockElements[blockIndex];
+  if (el) {
+    el.classList.add('speech-block-active');
+    honomassageBlocActifEl = el;
+  } else {
+    honomassageBlocActifEl = null;
+  }
+}
+
+function lirePositionMemorisee(numeroChapitre) {
+  try {
+    const brut = localStorage.getItem(HONOMASSAGE_POSITION_KEY);
+    if (!brut) return null;
+    const donnees = JSON.parse(brut);
+    if (donnees && donnees.chapitre === numeroChapitre) return donnees;
+    return null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function sauvegarderPosition(numeroChapitre, blockIndex) {
+  try {
+    localStorage.setItem(
+      HONOMASSAGE_POSITION_KEY,
+      JSON.stringify({ chapitre: numeroChapitre, blockIndex: blockIndex })
+    );
+  } catch (e) {
+    // Pas grave : la position ne sera simplement pas mémorisée.
+  }
+}
+
 function lireVitesseMemorisee() {
   try {
     const valeur = parseFloat(localStorage.getItem(HONOMASSAGE_RATE_KEY));
@@ -58,7 +139,7 @@ function sauvegarderVitesse(valeur) {
   try {
     localStorage.setItem(HONOMASSAGE_RATE_KEY, String(valeur));
   } catch (e) {
-    // Pas grave : la vitesse fonctionnera pour la session en cours seulement.
+    // Pas grave.
   }
 }
 
@@ -108,9 +189,7 @@ function demarrerMusiqueSiActive() {
 }
 
 function mettreEnPauseMusique() {
-  if (honomassageAudio) {
-    honomassageAudio.pause();
-  }
+  if (honomassageAudio) honomassageAudio.pause();
 }
 
 function arreterMusique() {
@@ -129,19 +208,18 @@ function initMediaSession(titreChapitre) {
       album: 'HonoMassage Book'
     });
     navigator.mediaSession.setActionHandler('play', () => {
-      if (honomassageEtatLecture === 'pause') {
-        document.getElementById('speech-btn').click();
-      }
+      if (honomassageEtatLecture === 'pause') document.getElementById('speech-btn').click();
     });
     navigator.mediaSession.setActionHandler('pause', () => {
-      if (honomassageEtatLecture === 'lecture') {
-        document.getElementById('speech-btn').click();
-      }
+      if (honomassageEtatLecture === 'lecture') document.getElementById('speech-btn').click();
     });
   } catch (e) {
-    // API non supportée ou navigateur restrictif : on ignore silencieusement.
+    // API non supportée : on ignore silencieusement.
   }
 }
+
+let parlerSegment; // déclarée en portée large pour être accessible depuis selectionnerBloc
+let selectionnerBloc;
 
 function initLectureVoixHaute(titreChapitre, elementContenu) {
   const boutonPrincipal = document.getElementById('speech-btn');
@@ -149,6 +227,7 @@ function initLectureVoixHaute(titreChapitre, elementContenu) {
   const selecteurVitesse = document.getElementById('speech-rate');
   const boutonMusique = document.getElementById('music-toggle-btn');
   honomassageAudio = document.getElementById('ambient-audio');
+  const numeroChapitre = numeroChapitreActuel();
 
   if (!boutonPrincipal || !boutonArret) return;
 
@@ -161,11 +240,23 @@ function initLectureVoixHaute(titreChapitre, elementContenu) {
   }
 
   window.speechSynthesis.cancel();
-  honomassageSegments = [];
-  honomassageIndexSegment = 0;
   honomassageEtatLecture = 'arret';
   honomassageRate = lireVitesseMemorisee();
   honomassageMusicEnabled = lireMusiquePreference();
+
+  construireBlocsEtSegments(elementContenu);
+
+  // Position de reprise : si un bloc a déjà été atteint dans ce chapitre,
+  // on prépare le pointeur dessus et on le signale discrètement, sans
+  // démarrer la lecture automatiquement (elle doit toujours être déclenchée
+  // par un appui explicite sur le bouton).
+  const position = lirePositionMemorisee(numeroChapitre);
+  if (position && honomassageBlockElements[position.blockIndex]) {
+    honomassageIndexSegment = indexSegmentPourBloc(position.blockIndex);
+    marquerBlocActif(position.blockIndex);
+  } else {
+    honomassageIndexSegment = 0;
+  }
 
   boutonPrincipal.disabled = false;
   mettreAJourBoutons(boutonPrincipal, boutonArret);
@@ -176,10 +267,6 @@ function initLectureVoixHaute(titreChapitre, elementContenu) {
     selecteurVitesse.addEventListener('change', () => {
       honomassageRate = parseFloat(selecteurVitesse.value);
       sauvegarderVitesse(honomassageRate);
-
-      // Si la lecture est en cours, on interrompt proprement le segment
-      // courant et on le relance à la nouvelle vitesse, sans avancer dans
-      // le texte, pour éviter toute incohérence de file SpeechSynthesis.
       if (honomassageEtatLecture === 'lecture') {
         window.speechSynthesis.cancel();
         parlerSegment(honomassageIndexSegment);
@@ -193,18 +280,14 @@ function initLectureVoixHaute(titreChapitre, elementContenu) {
       honomassageMusicEnabled = !honomassageMusicEnabled;
       sauvegarderMusiquePreference(honomassageMusicEnabled);
       mettreAJourBoutonMusique(boutonMusique);
-
       if (honomassageEtatLecture === 'lecture') {
-        if (honomassageMusicEnabled) {
-          demarrerMusiqueSiActive();
-        } else {
-          mettreEnPauseMusique();
-        }
+        if (honomassageMusicEnabled) demarrerMusiqueSiActive();
+        else mettreEnPauseMusique();
       }
     });
   }
 
-  function parlerSegment(index) {
+  parlerSegment = function (index) {
     if (index >= honomassageSegments.length) {
       honomassageEtatLecture = 'arret';
       honomassageIndexSegment = 0;
@@ -213,7 +296,14 @@ function initLectureVoixHaute(titreChapitre, elementContenu) {
       return;
     }
 
-    const utterance = new SpeechSynthesisUtterance(honomassageSegments[index]);
+    const segment = honomassageSegments[index];
+
+    if (segment.blockIndex >= 0) {
+      marquerBlocActif(segment.blockIndex);
+      sauvegarderPosition(numeroChapitre, segment.blockIndex);
+    }
+
+    const utterance = new SpeechSynthesisUtterance(segment.text);
     utterance.lang = 'fr-FR';
     utterance.rate = honomassageRate;
 
@@ -224,15 +314,24 @@ function initLectureVoixHaute(titreChapitre, elementContenu) {
     };
 
     window.speechSynthesis.speak(utterance);
-  }
+  };
+
+  selectionnerBloc = function (blockIndex) {
+    honomassageIndexSegment = indexSegmentPourBloc(blockIndex);
+    marquerBlocActif(blockIndex);
+    sauvegarderPosition(numeroChapitre, blockIndex);
+
+    if (honomassageEtatLecture === 'lecture') {
+      window.speechSynthesis.cancel();
+      parlerSegment(honomassageIndexSegment);
+    }
+    // Si la lecture est en pause ou arrêtée : on met seulement à jour le
+    // point de départ, l'utilisateur doit toujours appuyer sur le bouton
+    // pour démarrer ou reprendre la lecture.
+  };
 
   boutonPrincipal.addEventListener('click', () => {
     if (honomassageEtatLecture === 'arret') {
-      if (honomassageSegments.length === 0) {
-        const texteComplet = titreChapitre + '. ' + texteLisibleDepuisContenu(elementContenu);
-        honomassageSegments = decouperEnSegments(texteComplet);
-      }
-      honomassageIndexSegment = 0;
       honomassageEtatLecture = 'lecture';
       mettreAJourBoutons(boutonPrincipal, boutonArret);
       demarrerMusiqueSiActive();
@@ -256,7 +355,6 @@ function initLectureVoixHaute(titreChapitre, elementContenu) {
     window.speechSynthesis.cancel();
     arreterMusique();
     honomassageEtatLecture = 'arret';
-    honomassageIndexSegment = 0;
     mettreAJourBoutons(boutonPrincipal, boutonArret);
   });
 
