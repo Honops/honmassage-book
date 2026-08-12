@@ -582,3 +582,26 @@ h1, h2, h3 {
   font-family: var(--font-sans);
   font-size: 0.95rem;
 }
+/* Blocs de lecture sélectionnables (lecture à voix haute) */
+.speech-block {
+  cursor: pointer;
+  padding: 0.2rem 0.5rem;
+  margin-left: -0.5rem;
+  margin-right: -0.5rem;
+  border-radius: 8px;
+  transition: background-color 0.15s ease;
+}
+
+.speech-block:hover {
+  background-color: var(--color-bg-alt);
+}
+
+.speech-block:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.speech-block-active {
+  background-color: var(--color-bg-alt);
+  box-shadow: inset 3px 0 0 var(--color-accent);
+}
